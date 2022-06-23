@@ -18,6 +18,17 @@ namespace WebKhoaHoc.Services.Impl
 
         public CreateCourseRespone CreateCourse(CreateCourseRequest request)
         {
+            var combinedCourses = new List<CombinedCourse>();
+            request.CombinedCoursesId.ForEach(combinedCourse =>
+            {
+                var newCombinedCourse = _context.CombinedCourses.FirstOrDefault(c => c.Id == combinedCourse);
+                if (newCombinedCourse == null)
+                {
+                    throw new Exception("CombinedCourses not exist!");
+                }
+
+                combinedCourses.Add(newCombinedCourse);
+            });
             var newCourse = new Course
             {
                 Id = Guid.NewGuid(),
@@ -44,7 +55,8 @@ namespace WebKhoaHoc.Services.Impl
                 UserProgress = request.UserProgress,
                 Video = request.Video,
                 VideoType = request.VideoType,
-                VideoUrl = request.VideoUrl
+                VideoUrl = request.VideoUrl,
+                CombinedCourses = combinedCourses
             };
             _context.Courses.Add(newCourse);
             _context.SaveChanges();
@@ -74,7 +86,7 @@ namespace WebKhoaHoc.Services.Impl
                 UserProgress = newCourse.UserProgress,
                 Video = newCourse.Video,
                 VideoType = newCourse.VideoType,
-                VideoUrl = newCourse.VideoUrl
+                VideoUrl = newCourse.VideoUrl,
             };
 
         }

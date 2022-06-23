@@ -12,5 +12,6 @@ namespace WebKhoaHoc.Services
         List<ListCombinedCourseResponse> ListCombinedCourse();
         bool DeleteCombinedCourse(Guid id);
         EditCombinedCourseResponse EditCombinedCourse(EditCombinedCourseRequest request);
+        bool AddCourse(AddCourseInCombinedCourseRequest request);
     }
 }

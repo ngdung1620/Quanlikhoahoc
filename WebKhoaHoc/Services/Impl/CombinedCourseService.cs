@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebKhoaHoc.Models;
 using WebKhoaHoc.Models.RequestModels;
 using WebKhoaHoc.Models.ResponseModels;
@@ -103,6 +104,33 @@ namespace WebKhoaHoc.Services.Impl
                 Slug = editCombinedCourse.Slug,
                 Title = editCombinedCourse.Title
             };
+        }
+
+        public bool AddCourse(AddCourseInCombinedCourseRequest request)
+        {
+            var newCombinedCourse = _context.CombinedCourses
+                .Include(c => c.Courses)
+                .FirstOrDefault(c => c.Id == request.CombinedCoursesId);
+            if (newCombinedCourse == null) throw new Exception("Combined courses not exist");
+            request.CoursesId.ForEach(courseId =>
+            {
+                var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+                if (course == null)
+                {
+                    throw new Exception("Courses not exist!");
+                }
+
+                if (newCombinedCourse.Courses != null)
+                {
+                    newCombinedCourse.Courses.Add(course);
+                }
+                else
+                {
+                    newCombinedCourse.Courses = new List<Course> { course };
+                }
+            });
+            _context.SaveChanges();
+            return true;
         }
     }
 }

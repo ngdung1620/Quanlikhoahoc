@@ -43,5 +43,12 @@ namespace WebKhoaHoc.Controllers
             var editCombinedCourse = _combinedCourseService.EditCombinedCourse(request);
             return Ok(editCombinedCourse);
         }
+
+        [HttpPost("add-course")]
+        public IActionResult AddCourse([FromBody] AddCourseInCombinedCourseRequest request)
+        {
+            var isAdd = _combinedCourseService.AddCourse(request);
+            return Ok(isAdd);
+        }
     }
 }

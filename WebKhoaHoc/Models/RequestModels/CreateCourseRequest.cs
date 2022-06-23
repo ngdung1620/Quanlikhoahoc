@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebKhoaHoc.Models.RequestModels
 {
@@ -29,5 +31,6 @@ namespace WebKhoaHoc.Models.RequestModels
         public string Video { get; set; }
         public string VideoType { get; set; }
         public string VideoUrl { get; set; }
+        public List<Guid> CombinedCoursesId { get; set; }
     }
 }
