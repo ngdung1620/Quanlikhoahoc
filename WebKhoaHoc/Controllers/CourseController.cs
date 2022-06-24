@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebKhoaHoc.Models.RequestModels;
 using WebKhoaHoc.Services;
@@ -17,6 +18,7 @@ namespace WebKhoaHoc.Controllers
         }
 
         [HttpGet("list-course")]
+        [Authorize]
         public IActionResult ListCourse()
         {
             var listCourse = _courseService.ListCourse();
