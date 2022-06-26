@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebKhoaHoc.Models.RequestModels;
 using WebKhoaHoc.Models.ResponseModels;
@@ -25,6 +26,7 @@ namespace WebKhoaHoc.Controllers
         }
 
         [HttpPost("create-combined-course")]
+        [Authorize(Roles = "CombinedCourse.Write")]
         public IActionResult CreateCombinedCourse([FromBody] CombinedCourseRequest request)
         {
             var combinedCourse = _combinedCourseService.CreateCombinedCourse(request);
