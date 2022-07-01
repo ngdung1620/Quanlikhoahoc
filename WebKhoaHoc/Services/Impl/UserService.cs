@@ -16,14 +16,15 @@ using WebKhoaHoc.Settings;
 
 namespace WebKhoaHoc.Services.Impl
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
-         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly MasterDbContext _context;
 
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IConfiguration configuration, MasterDbContext context)
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+            IConfiguration configuration, MasterDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -38,13 +39,13 @@ namespace WebKhoaHoc.Services.Impl
             {
                 throw new Exception("Username not exist");
             }
-            
+
             var loginResponse = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!loginResponse)
             {
                 throw new Exception("Username or Password incorrect");
             }
-            
+
             var token = await GenerateTokenJwtByUser(user);
 
             return new LoginResponse
@@ -65,13 +66,11 @@ namespace WebKhoaHoc.Services.Impl
             };
 
             var newUser = await _userManager.CreateAsync(user, request.Password);
-            if (newUser.Succeeded)
-            {
-                return true;
-            }
-
-            return false;
+            if (!newUser.Succeeded) return false;
+            await _userManager.AddToRolesAsync(user, request.Roles);
+            return true;
         }
+
         private async Task<JwtSecurityToken> GenerateTokenJwtByUser(ApplicationUser user)
         {
             var authClaims = new List<Claim>
@@ -92,22 +91,22 @@ namespace WebKhoaHoc.Services.Impl
                     {
                         authClaims.Add(claim);
                     }
-                }             
+                }
             }
 
             if (user.UserName.Equals("tdao7"))
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, "CombinedCourse.Write"));
             }
-            
+
             authClaims.Add(new Claim(ClaimTypes.Role, "manyRole"));
 
             foreach (var userRole in userRoles)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
-            
-            
+
+
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(DefaultApplication.SecretKey));
 
             var token = new JwtSecurityToken(

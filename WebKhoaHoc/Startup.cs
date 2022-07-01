@@ -29,6 +29,7 @@ namespace WebKhoaHoc
         {
             Configuration = configuration;
         }
+
         readonly string _CORS = "_CORS";
         public IConfiguration Configuration { get; }
 
@@ -38,9 +39,10 @@ namespace WebKhoaHoc
             services.AddControllers();
             // Khai bao scoped
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICourseService,CourseService>();
+            services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ICombinedCourseService, CombinedCourseService>();
-            services.AddScoped<ILessonService,LessonService>();
+            services.AddScoped<ILessonService, LessonService>();
+            services.AddScoped<IRoleService, RoleService>();
             // cau hinh DB, Cau hinh services
             services.AddDbContext<MasterDbContext>(options =>
                 options.UseNpgsql(Configuration["PostgresSQL:ConnectionString"])
@@ -78,7 +80,6 @@ namespace WebKhoaHoc
                 options.Password.RequireUppercase = true; // bắt buộc chữ in
                 options.Password.RequiredLength = 4; // Số ký tự tối thiểu của password
                 options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
-
             });
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
@@ -97,7 +98,7 @@ namespace WebKhoaHoc
                             .AllowCredentials();
                     });
             });
-            
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebKhoaHoc", Version = "v1" });
@@ -123,6 +124,9 @@ namespace WebKhoaHoc
                     }
                 });
             });
+
+            services.AddAutoMapper(typeof(Startup));
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -135,6 +139,7 @@ namespace WebKhoaHoc
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebKhoaHoc v1"));
             }
+
             app.UseCors(_CORS);
             app.UseHttpsRedirection();
 

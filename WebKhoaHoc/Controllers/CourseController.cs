@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebKhoaHoc.Models.RequestModels;
 using WebKhoaHoc.Services;
+using WebKhoaHoc.Settings;
 
 namespace WebKhoaHoc.Controllers
 {
     [ApiController]
     [Route("[Controller]")]
-    public class CourseController: ControllerBase
+    public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
 
@@ -18,12 +19,13 @@ namespace WebKhoaHoc.Controllers
         }
 
         [HttpGet("list-course")]
-        [Authorize]
         public IActionResult ListCourse()
         {
             var listCourse = _courseService.ListCourse();
             return Ok(listCourse);
         }
+
+        [Authorize(Roles = UIClaims.CourseWrite)]
         [HttpPost("create-course")]
         public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
         {
