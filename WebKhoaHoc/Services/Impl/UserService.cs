@@ -71,6 +71,55 @@ namespace WebKhoaHoc.Services.Impl
             return true;
         }
 
+        public  List<ListUserResponse> GetListUser()
+        {
+            var users = _context.Users.Select(course => new ListUserResponse
+            {
+                Id = course.Id,
+                UserName = course.UserName,
+                Email = course.Email,
+                PhoneNumber = course.PhoneNumber,
+                FullName = course.FullName
+            }).ToList();
+            return users;
+
+        }
+        public bool DeleteUser(Guid userId)
+        {
+            var user = _context.Users.FirstOrDefault(user => user.Id == userId);
+            if (user == null)
+            {
+                throw new Exception("Username not exist");
+            }
+
+            _context.Remove(user);
+            _context.SaveChanges();
+            return true;
+        }
+
+        
+        public async Task<EditUserResponse> EditUser(EditUserRequest request)
+        {
+            var editUser = await _context.Users.FirstOrDefaultAsync(user => user.Id == request.Id);
+            if (editUser == null)
+            {
+                throw new Exception("Username not exist");
+            }
+
+            editUser.Email = request.Email;
+            editUser.FullName = request.FullName;
+            editUser.PhoneNumber = request.PhoneNumber;
+            _context.SaveChanges();
+            return new EditUserResponse()
+            {
+                Id = editUser.Id,
+                Email = editUser.Email,
+                FullName = editUser.FullName,
+                PhoneNumber = editUser.PhoneNumber
+            };
+        }
+
+
         private async Task<JwtSecurityToken> GenerateTokenJwtByUser(ApplicationUser user)
         {
             var authClaims = new List<Claim>

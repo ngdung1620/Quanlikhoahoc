@@ -30,7 +30,7 @@ namespace WebKhoaHoc.Controllers
             return Ok(lesson);
         }
 
-        [HttpDelete("delete-lesson")]
+        [HttpDelete("delete-lesson/{id}")]
         public IActionResult DeleteLesson(Guid id)
         {
             var isDeleteLesson = _lessonService.DeleteLesson(id);
@@ -43,5 +43,6 @@ namespace WebKhoaHoc.Controllers
             var editLesson = _lessonService.EditLesson(request);
             return Ok(editLesson);
         }
+       
     }
 }

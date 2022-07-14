@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WebKhoaHoc.Models.ResponseModels
 {
@@ -29,5 +30,7 @@ namespace WebKhoaHoc.Models.ResponseModels
         public string Video { get; set; }
         public string VideoType { get; set; }
         public string VideoUrl { get; set; }
+        public List<Lesson> Lessons { get; set; }
+        public List<CombinedCourse> CombinedCourses { get; set; }
     }
 }

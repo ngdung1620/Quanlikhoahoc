@@ -38,20 +38,7 @@ namespace WebKhoaHoc.Services.Impl
             }
             var newLesson = new Lesson
             {
-                ContinueId = request.ContinueId,
                 CourseId = request.CourseId,
-                CourseProgress = request.CourseProgress,
-                EndOfCourse = request.EndOfCourse,
-                EndOfFree = request.EndOfFree,
-                HasEndTimeLogging = request.HasEndTimeLogging,
-                IsCompleted = request.IsCompleted,
-                IsLogged = request.IsLogged,
-                LastStepId = request.LastStepId,
-                LearningLog = request.LearningLog,
-                NextId = request.NextId,
-                PassPercent = request.PassPercent,
-                TrackStep = request.TrackStep,
-                UserSolutions = request.UserSolutions,
                 Title = request.Title,
                 Description = request.Description,
                 Video = request.Video
@@ -90,6 +77,7 @@ namespace WebKhoaHoc.Services.Impl
             editLesson.Description = request.Description;
             editLesson.Video = request.Video;
             editLesson.Title = request.Title;
+            editLesson.CourseId = request.CourseId;
             _context.SaveChanges();
             return new EditLessonResponse
             {

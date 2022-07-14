@@ -25,7 +25,7 @@ namespace WebKhoaHoc.Controllers
             return Ok(listCourse);
         }
 
-        [Authorize(Roles = UIClaims.CourseWrite)]
+        /*[Authorize(Roles = UIClaims.CourseWrite)]*/
         [HttpPost("create-course")]
         public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
         {

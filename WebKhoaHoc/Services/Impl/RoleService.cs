@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebKhoaHoc.Models;
 using WebKhoaHoc.Models.RequestModels;
 using WebKhoaHoc.Models.ResponseModels;
@@ -73,6 +74,51 @@ namespace WebKhoaHoc.Services.Impl
 
             return new RespondAPI<string>()
                 { Result = ResultRespond.Failed, Code = "03", Message = "Không thể cập nhật nhóm quyền" };
+        }
+
+        public async Task<RoleResponse> EditRole(EditRoleRequest request)
+        {
+            var newRole = await _context.Roles.FirstOrDefaultAsync(role => role.Id == request.RoleId);
+            if (newRole == null)
+            {
+                throw new Exception("Role not exist");
+            }
+            newRole.Name = request.Name;
+            await _context.SaveChangesAsync();
+            return _mapper.Map<RoleResponse>(newRole);
+        }
+
+        public async Task<bool> DeleteRole(Guid id)
+        {
+            var deleteRole = await _context.Roles.FirstOrDefaultAsync(role => role.Id == id);
+            if (deleteRole == null)
+            {
+                throw new Exception("role not exist!");
+            }
+
+            _context.Roles.Remove(deleteRole);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<FindClaimByRoleIdResponse> FindClaimByRoleId(FindClaimByRoleIdRequest request)
+        {
+            var newRole = await _context.Roles.FirstOrDefaultAsync(role => role.Id == request.RoleId);
+            if (newRole == null)
+            {
+                throw new Exception("Role not exist!");
+            }
+            var listClaim = _context.RoleClaims
+                .Where(c => c.RoleId == request.RoleId)
+                .Select(c => c.ClaimValue)
+                .ToList();
+            var role = new FindClaimByRoleIdResponse
+            {
+                RoleId = newRole.Id,
+                Name = newRole.Name,
+                Claims = listClaim
+            };
+            return role;
         }
     }
 }

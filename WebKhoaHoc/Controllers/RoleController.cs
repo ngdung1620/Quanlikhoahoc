@@ -18,13 +18,13 @@ namespace WebKhoaHoc.Controllers
             _roleService = roleService;
         }
 
-        [HttpGet]
+        [HttpGet("get-role")]
         public IActionResult GetRole()
         {
             return Ok(_roleService.GetAllRole());
         }
         
-        [HttpPost]
+        [HttpPost("create-role")]
         public async Task<IActionResult> CreateRole(RoleRequest request)
         {
             return Ok(await _roleService.Create(request));
@@ -42,6 +42,22 @@ namespace WebKhoaHoc.Controllers
         {
             return Ok(SystemClaim.claims);
         }
-        
+        [HttpPost("edit-role")]
+        public async Task<IActionResult> EditRole([FromBody] EditRoleRequest request)
+        {
+            return Ok(await _roleService.EditRole(request));
+        }
+
+        [HttpDelete("delete-role/{id}")]
+        public async Task<IActionResult> DeleteRole(Guid id)
+        {
+            return Ok(await _roleService.DeleteRole(id));
+        }
+
+        [HttpPost("FindClaimByRoleId")]
+        public async Task<IActionResult> FindClaimByRoleId([FromBody] FindClaimByRoleIdRequest request)
+        {
+            return Ok(await _roleService.FindClaimByRoleId(request));
+        }
     }
 }

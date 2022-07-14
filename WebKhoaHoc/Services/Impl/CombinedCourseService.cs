@@ -35,9 +35,6 @@ namespace WebKhoaHoc.Services.Impl
             var newCombinedCourse = new CombinedCourse
             {
                 Id = Guid.NewGuid(),
-                Image = request.Image,
-                ImageUrl = request.ImageUrl,
-                Slug = request.Slug,
                 Title = request.Title,
                 Courses = courses
             };
@@ -47,9 +44,6 @@ namespace WebKhoaHoc.Services.Impl
             return new CombinedCourseResponse
             {
                 Id = newCombinedCourse.Id,
-                Image = newCombinedCourse.Image,
-                ImageUrl = newCombinedCourse.ImageUrl,
-                Slug = newCombinedCourse.Slug,
                 Title = newCombinedCourse.Title,
                 Courses = newCombinedCourse.Courses
             };
@@ -86,23 +80,38 @@ namespace WebKhoaHoc.Services.Impl
         public EditCombinedCourseResponse EditCombinedCourse(EditCombinedCourseRequest request)
         {
             var editCombinedCourse =
-                _context.CombinedCourses.FirstOrDefault(combinedCourse => combinedCourse.Id == request.Id);
+                _context.CombinedCourses
+                    .Include(c => c.Courses)
+                    .FirstOrDefault(combinedCourse => combinedCourse.Id == request.Id);
             if (editCombinedCourse == null)
             {
-                throw new Exception("Combined Course not exist!");
+                throw new Exception("Khóa học không tồn tại");
             }
-            editCombinedCourse.Image = request.Image;
-            editCombinedCourse.ImageUrl = request.ImageUrl;
-            editCombinedCourse.Slug = request.Slug;
             editCombinedCourse.Title = request.Title;
+            editCombinedCourse.Courses.Clear();
+            request.Courses.ForEach(courseId =>
+            {
+                var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+                if (course == null)
+                {
+                    throw new Exception("Courses not exist!");
+                }
+
+                if ( editCombinedCourse.Courses != null)
+                {
+                    editCombinedCourse.Courses.Add(course);
+                }
+                else
+                { 
+                    editCombinedCourse.Courses = new List<Course> { course };
+                }
+            });
             _context.SaveChanges();
-            return new EditCombinedCourseResponse
+            return new EditCombinedCourseResponse()
             {
                 Id = editCombinedCourse.Id,
-                Image = editCombinedCourse.Image,
-                ImageUrl = editCombinedCourse.ImageUrl,
-                Slug = editCombinedCourse.Slug,
-                Title = editCombinedCourse.Title
+                Title = editCombinedCourse.Title,
+                Courses = editCombinedCourse.Courses
             };
         }
 

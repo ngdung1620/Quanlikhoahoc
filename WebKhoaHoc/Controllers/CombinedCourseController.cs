@@ -26,7 +26,7 @@ namespace WebKhoaHoc.Controllers
         }
 
         [HttpPost("create-combined-course")]
-        [Authorize(Roles = "CombinedCourse.Write")]
+        /*[Authorize(Roles = "CombinedCourse.Write")]*/
         public IActionResult CreateCombinedCourse([FromBody] CombinedCourseRequest request)
         {
             var combinedCourse = _combinedCourseService.CreateCombinedCourse(request);

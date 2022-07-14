@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebKhoaHoc.Models.RequestModels;
 using WebKhoaHoc.Services;
@@ -29,5 +30,26 @@ namespace WebKhoaHoc.Controllers
             var response = await _userService.Registration(request);
             return Ok(response);
         }
+
+        [HttpGet("get-user")]
+        public IActionResult GetUser()
+        {
+            return Ok(_userService.GetListUser());
+        }
+
+        [HttpDelete("delete-user/{id}")]
+        public IActionResult DeleteUser(Guid id)
+        {
+            var isDeleted = _userService.DeleteUser(id);
+            return Ok(isDeleted);
+        }
+
+        [HttpPost("edit-user")]
+        public async Task<IActionResult> EditUser([FromBody] EditUserRequest request)
+        {
+           var  editUser = await _userService.EditUser(request);
+            return Ok(editUser);
+        }
+        
     }
 }
