@@ -17,7 +17,8 @@ namespace WebKhoaHoc.Controllers
         {
             _combinedCourseService = combinedCourseService;
         }
-
+        
+        [Authorize]
         [HttpGet("list-combine-course")]
         public IActionResult ListCombineCourse()
         {

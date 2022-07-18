@@ -47,10 +47,12 @@ namespace WebKhoaHoc.Services.Impl
             }
 
             var token = await GenerateTokenJwtByUser(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
             return new LoginResponse
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Claims = userRoles.ToList()
             };
         }
 
