@@ -37,6 +37,11 @@ namespace WebKhoaHoc.Controllers
             return Ok(_userService.GetListUser());
         }
 
+        [HttpPost("list-user")]
+        public IActionResult ListUser(ListUserRequest request)
+        {
+            return Ok(_userService.ListUser(request));
+        }
         [HttpDelete("delete-user/{id}")]
         public IActionResult DeleteUser(Guid id)
         {
@@ -50,6 +55,11 @@ namespace WebKhoaHoc.Controllers
            var  editUser = await _userService.EditUser(request);
             return Ok(editUser);
         }
-        
+
+        [HttpGet("get-user/{id}")]
+        public async Task<IActionResult> GetUser(Guid id)
+        {
+            return Ok(await _userService.GetUserById(id));
+        }
     }
 }

@@ -47,12 +47,25 @@ namespace WebKhoaHoc.Services.Impl
             }
 
             var token = await GenerateTokenJwtByUser(user);
-            var userRoles = await _userManager.GetRolesAsync(user);
+            /*var userRoles = await _userManager.GetRolesAsync(user);
+            List<string> claims = new List<string>();
+            foreach (string role in userRoles)
+            {
+                var roleData = await _roleManager.FindByNameAsync(role);
+                if (roleData != null)
+                {
+                   var roleClaims = await _roleManager.GetClaimsAsync(roleData);
+                   foreach (Claim claim in roleClaims)
+                   {
+                       claims.Add(claim.Value);
+                   }
+                }
+            }*/
 
+            /*var fullName = user.FullName;*/
             return new LoginResponse
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Claims = userRoles.ToList()
             };
         }
 
@@ -75,13 +88,13 @@ namespace WebKhoaHoc.Services.Impl
 
         public  List<ListUserResponse> GetListUser()
         {
-            var users = _context.Users.Select(course => new ListUserResponse
+            var users = _context.Users.Select(user => new ListUserResponse
             {
-                Id = course.Id,
-                UserName = course.UserName,
-                Email = course.Email,
-                PhoneNumber = course.PhoneNumber,
-                FullName = course.FullName
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FullName = user.FullName
             }).ToList();
             return users;
 
@@ -121,6 +134,46 @@ namespace WebKhoaHoc.Services.Impl
             };
         }
 
+        public async Task<GetUserById> GetUserById(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            return new GetUserById
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FullName = user.FullName
+            };
+        }
+
+        public UserResponse ListUser(ListUserRequest request)
+        {
+            var allUser = _userManager.Users.AsQueryable();
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                allUser = allUser.Where(user => user.FullName.ToLower().Contains(request.Search.ToLower()));
+            }
+            var result = PaginatedList<ApplicationUser>
+                .Create(allUser,request.PageIndex,request.PageSize);
+            var listUser = result.Select(user => new ListUserResponse
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FullName = user.FullName
+            }).ToList();
+            return new UserResponse
+            {
+                ListUser = listUser,
+                TotalPage = result.TotalPage,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize,
+                TotalRecords = allUser.Count()
+            };
+        }
+
 
         private async Task<JwtSecurityToken> GenerateTokenJwtByUser(ApplicationUser user)
         {
@@ -145,17 +198,17 @@ namespace WebKhoaHoc.Services.Impl
                 }
             }
 
-            if (user.UserName.Equals("tdao7"))
+            /*if (user.UserName.Equals("tdao7"))
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, "CombinedCourse.Write"));
             }
 
-            authClaims.Add(new Claim(ClaimTypes.Role, "manyRole"));
+            authClaims.Add(new Claim(ClaimTypes.Role, "manyRole"));*/
 
-            foreach (var userRole in userRoles)
+            /*foreach (var userRole in userRoles)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
+            }*/
 
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(DefaultApplication.SecretKey));

@@ -7,8 +7,10 @@ namespace WebKhoaHoc.Settings
     {
         public static List<ClaimInfo> claims = new List<ClaimInfo>()
         {
+            UIClaims.Per,
             UIClaims.CourseClaims, 
             UIClaims.CombinedCourseClaims
+           
         };
         
     }

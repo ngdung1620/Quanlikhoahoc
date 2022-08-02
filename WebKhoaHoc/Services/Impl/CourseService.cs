@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebKhoaHoc.Models;
 using WebKhoaHoc.Models.RequestModels;
@@ -11,6 +12,7 @@ namespace WebKhoaHoc.Services.Impl
     public class CourseService: ICourseService
     {
         private readonly MasterDbContext _context;
+        public static int PageSize { get; set; } = 5;
 
         public CourseService(MasterDbContext context)
         {
@@ -57,31 +59,10 @@ namespace WebKhoaHoc.Services.Impl
                 {
                     Id = course.Id,
                     Description = course.Description,
-                    Icon = course.Icon,
-                    IconUrl = course.IconUrl,
                     Image = course.Image,
                     ImageUrl = course.ImageUrl,
-                    IsComingSoon = course.IsComingSoon,
-                    IsPreOrder = course.IsPreOrder,
-                    IsPro = course.IsPro,
-                    IsPublished = course.IsPublished,
-                    IsRegistered = course.IsRegistered,
-                    IsSelling = course.IsSelling,
-                    LastCompletedAt = course.LastCompletedAt,
-                    OldPrice = course.OldPrice,
-                    PreOldPrice = course. PreOldPrice,
-                    Price = course.Price,
-                    PublishedAt = course.PublishedAt,
-                    RelatedCourses = course.RelatedCourses,
-                    Slug = course.Slug,
-                    StudentCount = course.StudentCount,
                     Title = course.Title,
-                    UserProgress = course.UserProgress,
-                    Video = course.Video,
-                    VideoType = course.VideoType,
-                    VideoUrl = course.VideoUrl,
-                    Lessons = course.Lessons,
-                    CombinedCourses = course.CombinedCourses
+                    
                 }).ToList();
             
             return course;
@@ -136,6 +117,51 @@ namespace WebKhoaHoc.Services.Impl
                 Description = editCourse.Description,
                 Title = editCourse.Title
             };
+        }
+
+        public async Task<GetListLessonWithCourseIdResponse> GetListLessonByCourseId(Guid courseId)
+        {
+            var course = await _context.Courses
+                .Include(c => c.Lessons)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            return new GetListLessonWithCourseIdResponse
+            {
+                CourseId = course.Id,
+                Description = course.Description,
+                Title = course.Title,
+                Lessons = course.Lessons
+            };
+        }
+
+      
+
+        public CourseResponse GetListCourse(CourseRequest request)
+        {
+            var allCourse = _context.Courses.AsQueryable();
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                allCourse = allCourse.Where(c =>  c.Title.ToLower().Contains(request.Search.ToLower()));
+            }
+            
+            var result = PaginatedList<Course>.Create(allCourse, request.PageIndex, request.PageSize);
+            var listCourse = result.Select(c => new ListCourseResponse
+            {
+                Id = c.Id,
+                Description = c.Description,
+                Image = c.Image,
+                ImageUrl = c.ImageUrl,
+                Title = c.Title,
+            }).ToList();
+            return new CourseResponse
+            {
+                ListCourse = listCourse,
+                TotalPage = result.TotalPage,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize,
+                TotalRecords = allCourse.Count()
+            };
+
         }
     }
 }

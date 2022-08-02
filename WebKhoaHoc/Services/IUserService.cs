@@ -13,5 +13,7 @@ namespace WebKhoaHoc.Services
         List<ListUserResponse> GetListUser();
         bool DeleteUser(Guid userId);
         Task<EditUserResponse> EditUser(EditUserRequest request);
+        Task<GetUserById> GetUserById(Guid userId);
+        UserResponse ListUser(ListUserRequest request);
     }
 }

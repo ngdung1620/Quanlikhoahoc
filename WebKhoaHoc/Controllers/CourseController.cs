@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebKhoaHoc.Models.RequestModels;
@@ -17,7 +18,7 @@ namespace WebKhoaHoc.Controllers
         {
             _courseService = courseService;
         }
-
+        
         [HttpGet("list-course")]
         public IActionResult ListCourse()
         {
@@ -25,6 +26,12 @@ namespace WebKhoaHoc.Controllers
             return Ok(listCourse);
         }
 
+        [HttpPost("get-list-course")]
+        public IActionResult GetCourse(CourseRequest request)
+        {
+            return Ok(_courseService.GetListCourse(request));
+            
+        }
         /*[Authorize(Roles = UIClaims.CourseWrite)]*/
         [HttpPost("create-course")]
         public IActionResult CreateCourse([FromBody] CreateCourseRequest request)
@@ -45,6 +52,12 @@ namespace WebKhoaHoc.Controllers
         {
             var editCourse = _courseService.EditCourse(request);
             return Ok(editCourse);
+        }
+
+        [HttpGet("get-course/{id}")]
+        public async Task<IActionResult> GetCourse(Guid id)
+        {
+            return Ok( await _courseService.GetListLessonByCourseId(id));
         }
     }
 }

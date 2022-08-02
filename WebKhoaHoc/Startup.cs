@@ -133,7 +133,7 @@ namespace WebKhoaHoc
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MasterDbContext context)
         {
             context.Database.Migrate();
-            if (env.IsDevelopment())
+            if (true)
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
